@@ -1,20 +1,88 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  # Finance-Research — AI 金融研究搜索平台
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  ## 技术栈
+  - 后端：Python 3.11 / FastAPI / Pydantic v2 / Uvicorn
+  - 前端：React 18 / TypeScript / Ant Design / Vite / React Router v6
+  - 数据库：PostgreSQL（本地）/ psycopg2-binary（连接池）
+  - LLM：DeepSeek API（openai 兼容 SDK），无 key 时降级到结构化 mock
+  - 市场数据：AKShare（Python 3.11 专用），内存缓存 TTL 60s/300s
+  - 向量搜索（规划中）：Qdrant（轻量本地部署）
+  - 调度：APScheduler（BackgroundScheduler，Asia/Shanghai）
+  - 认证（规划中）：JWT + bcrypt 密码哈希，无多因素验证
+
+  ## 项目结构
+  ```
+  backend/
+    app/
+      main.py          # FastAPI 入口，CORS，lifespan（db.init + scheduler）
+      models.py        # 所有 Pydantic 模型
+      routers/         # chat, cards, skills, search, market（各一文件）
+      services/
+        llm.py         # LLM 层：DeepSeek 真实调用 + mock 降级
+        deepseek.py    # DeepSeek API 客户端（chat / chat_stream）
+        store.py       # 内存存储（RLock）— 待替换为 PostgreSQL
+        db.py          # PostgreSQL 连接池 + DDL + 写入函数（市场数据）
+        market.py      # AKShare 采集服务，带内存缓存
+        scheduler.py   # 定时任务：9:00 刷新 / 17:00 清表
+      data/
+        research.py    # 静态研报语料 + 关键词搜索 — 待替换为 Qdrant
+        skills_seed.py # 预置技能（静态配置，启动时加载到内存）
+  frontend/
+    src/
+      App.tsx          # 路由 + Ant Design 暗色主题
+      api/client.ts    # fetch 封装，BASE=http://localhost:8000/api
+      api/types.ts     # 共享类型
+      pages/           # SearchPage, SkillsPage, CardsPage
+      components/      # NavBar
+  ```
+
+  ## 关键约定
+  - Python 文件使用 `from __future__ import annotations`
+  - 所有密码必须用 bcrypt 哈希存储，禁止明文
+  - 技能（Skill）是静态配置，从 skills_seed.py 加载，不持久化到数据库
+  - 环境变量通过 backend/.env 加载（python-dotenv），.env 不提交 git
+  - API 路径统一前缀 /api/
+  - 前端 API 调用统一走 api/client.ts，不直接 fetch
+  - 使用 conventional commits（feat/fix/refactor/chore）
+  - 中文注释，英文变量名
+
+  ## 当前已知技术债
+  - store.py 是内存存储，重启丢失卡片数据 → 待迁移到 PostgreSQL
+  - research.py 是关键词搜索 → 待替换为 Qdrant 向量搜索
+  - 无用户认证，CORS allow_origins=["*"] → 待添加 JWT 认证
+  - 流式输出 deepseek.chat_stream 已实现但前端未接入
+
+  ## API 接口总览
+  | Method | Path | 说明 |
+  |--------|------|------|
+  | POST | /api/chat | 主聊天接口 |
+  | GET | /api/search?q=&top_k= | 研报搜索 |
+  | GET/POST | /api/cards | 卡片列表/创建 |
+  | GET/PATCH/DELETE | /api/cards/{id} | 卡片详情/收藏/删除 |
+  | GET | /api/skills?q=&category= | 技能列表 |
+  | GET | /api/skills/{id} | 技能详情 |
+  | GET | /api/market/snapshot | 市场快照 |
+  | GET | /api/market/hot-stocks | 热门股票 |
+  | GET | /api/market/bond-yields | 债券收益率 |
+  | GET | /api/market/fund-navs | 基金净值 |
+
+rules:
+  proposal:
+    - 保持简洁，500 字以内
+    - 必须包含 Non-goals 章节
+    - 用中文写作
+  design:
+    - 必须包含数据模型变更（如有）
+    - 必须包含 API 变更（如有）
+    - 标注与现有代码的集成点（文件路径+行为描述）
+    - 用中文写作
+  spec:
+    - 描述"是什么"和"为什么"，不描述"怎么做"
+    - 用中文写作
+  tasks:
+    - 每个任务拆分到 1-3 小时可完成的粒度
+    - 标注依赖关系
+    - 用中文写作
