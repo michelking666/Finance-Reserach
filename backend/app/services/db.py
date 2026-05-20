@@ -1,6 +1,7 @@
 """PostgreSQL 持久化层：连接池、建表、写入函数。"""
 from __future__ import annotations
 
+import json
 import os
 import logging
 from contextlib import contextmanager
@@ -77,6 +78,20 @@ CREATE TABLE IF NOT EXISTS fund_announcements (
     ann_type     TEXT,
     ann_date     TEXT,
     url          TEXT
+);
+
+CREATE TABLE IF NOT EXISTS cards (
+    id          TEXT PRIMARY KEY,
+    title       TEXT NOT NULL,
+    subtitle    TEXT,
+    summary     TEXT NOT NULL,
+    tags        JSONB NOT NULL DEFAULT '[]',
+    metrics     JSONB NOT NULL DEFAULT '[]',
+    bullets     JSONB NOT NULL DEFAULT '[]',
+    scenario    TEXT,
+    sources     JSONB NOT NULL DEFAULT '[]',
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    saved       BOOLEAN NOT NULL DEFAULT FALSE
 );
 """
 
@@ -367,3 +382,128 @@ def truncate_all() -> None:
         logger.info("所有市场数据表已清空")
     except Exception as exc:
         logger.error("truncate_all 失败: %s", exc)
+
+
+# ── 卡片 CRUD ─────────────────────────────────────────────
+
+def upsert_card(card: dict) -> None:
+    if not _available():
+        return
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO cards (id, title, subtitle, summary, tags, metrics, bullets, scenario, sources, created_at, saved)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (id) DO UPDATE SET
+                    title = EXCLUDED.title,
+                    subtitle = EXCLUDED.subtitle,
+                    summary = EXCLUDED.summary,
+                    tags = EXCLUDED.tags,
+                    metrics = EXCLUDED.metrics,
+                    bullets = EXCLUDED.bullets,
+                    scenario = EXCLUDED.scenario,
+                    sources = EXCLUDED.sources,
+                    saved = EXCLUDED.saved
+                """,
+                (
+                    card["id"], card["title"], card.get("subtitle"), card["summary"],
+                    json.dumps(card.get("tags", []), ensure_ascii=False),
+                    json.dumps(card.get("metrics", []), ensure_ascii=False),
+                    json.dumps(card.get("bullets", []), ensure_ascii=False),
+                    card.get("scenario"),
+                    json.dumps(card.get("sources", []), ensure_ascii=False),
+                    card.get("created_at"),
+                    card.get("saved", False),
+                ),
+            )
+            conn.commit()
+    except Exception as exc:
+        logger.error("upsert_card 失败: %s", exc)
+
+
+def get_card(card_id: str) -> dict | None:
+    if not _available():
+        return None
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                "SELECT id, title, subtitle, summary, tags, metrics, bullets, scenario, sources, created_at, saved "
+                "FROM cards WHERE id = %s",
+                (card_id,),
+            )
+            row = cur.fetchone()
+            if row:
+                return _row_to_card(row)
+    except Exception as exc:
+        logger.error("get_card 失败: %s", exc)
+    return None
+
+
+def list_cards(only_saved: bool = False) -> list[dict]:
+    if not _available():
+        return []
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            if only_saved:
+                cur.execute(
+                    "SELECT id, title, subtitle, summary, tags, metrics, bullets, scenario, sources, created_at, saved "
+                    "FROM cards WHERE saved = TRUE ORDER BY created_at DESC"
+                )
+            else:
+                cur.execute(
+                    "SELECT id, title, subtitle, summary, tags, metrics, bullets, scenario, sources, created_at, saved "
+                    "FROM cards ORDER BY created_at DESC"
+                )
+            return [_row_to_card(row) for row in cur.fetchall()]
+    except Exception as exc:
+        logger.error("list_cards 失败: %s", exc)
+    return []
+
+
+def delete_card(card_id: str) -> bool:
+    if not _available():
+        return False
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute("DELETE FROM cards WHERE id = %s", (card_id,))
+            conn.commit()
+            return cur.rowcount > 0
+    except Exception as exc:
+        logger.error("delete_card 失败: %s", exc)
+    return False
+
+
+def toggle_save(card_id: str, saved: bool) -> dict | None:
+    if not _available():
+        return None
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                "UPDATE cards SET saved = %s WHERE id = %s "
+                "RETURNING id, title, subtitle, summary, tags, metrics, bullets, scenario, sources, created_at, saved",
+                (saved, card_id),
+            )
+            conn.commit()
+            row = cur.fetchone()
+            if row:
+                return _row_to_card(row)
+    except Exception as exc:
+        logger.error("toggle_save 失败: %s", exc)
+    return None
+
+
+def _row_to_card(row: tuple) -> dict:
+    return {
+        "id": row[0],
+        "title": row[1],
+        "subtitle": row[2],
+        "summary": row[3],
+        "tags": row[4] if isinstance(row[4], list) else json.loads(row[4] or "[]"),
+        "metrics": row[5] if isinstance(row[5], list) else json.loads(row[5] or "[]"),
+        "bullets": row[6] if isinstance(row[6], list) else json.loads(row[6] or "[]"),
+        "scenario": row[7],
+        "sources": row[8] if isinstance(row[8], list) else json.loads(row[8] or "[]"),
+        "created_at": row[9].isoformat() if hasattr(row[9], "isoformat") else str(row[9]),
+        "saved": row[10],
+    }
