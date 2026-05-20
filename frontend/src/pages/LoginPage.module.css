@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #080c14;
+}
+
+.card {
+  width: 360px;
+  padding: 40px;
+  background: #0f1929;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+}

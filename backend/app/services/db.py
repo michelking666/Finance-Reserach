@@ -93,6 +93,14 @@ CREATE TABLE IF NOT EXISTS cards (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     saved       BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id               SERIAL PRIMARY KEY,
+    username         TEXT NOT NULL UNIQUE,
+    hashed_password  TEXT NOT NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    is_active        BOOLEAN NOT NULL DEFAULT TRUE
+);
 """
 
 
@@ -507,3 +515,34 @@ def _row_to_card(row: tuple) -> dict:
         "created_at": row[9].isoformat() if hasattr(row[9], "isoformat") else str(row[9]),
         "saved": row[10],
     }
+
+
+# ── 用户 CRUD ─────────────────────────────────────────────
+
+def get_user_by_username(username: str) -> dict | None:
+    if not _available():
+        return None
+    try:
+        with _conn() as conn, conn.cursor() as cur:
+            cur.execute(
+                "SELECT id, username, hashed_password, is_active FROM users WHERE username = %s",
+                (username,),
+            )
+            row = cur.fetchone()
+            if row:
+                return {"id": row[0], "username": row[1], "hashed_password": row[2], "is_active": row[3]}
+    except Exception as exc:
+        logger.error("get_user_by_username 失败: %s", exc)
+    return None
+
+
+def create_user(username: str, hashed_password: str) -> dict:
+    with _conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO users (username, hashed_password) VALUES (%s, %s) RETURNING id, username, is_active",
+            (username, hashed_password),
+        )
+        conn.commit()
+        row = cur.fetchone()
+        return {"id": row[0], "username": row[1], "is_active": row[2]}
+

@@ -64,18 +64,23 @@
 
 .right {
   flex-shrink: 0;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-  border-radius: 8px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+}
+
+.username {
   font-size: 13px;
-  font-weight: 600;
-  color: #fff;
+  color: #9ca3af;
+}
+
+.logout {
+  font-size: 16px;
+  color: #6b7280;
   cursor: pointer;
+  transition: color 0.15s;
+}
+
+.logout:hover {
+  color: #e2e8f0;
 }

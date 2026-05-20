@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import threading
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.services import market
+from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/api/market", tags=["market"])
 
@@ -14,7 +15,7 @@ def _bg(fn, *args, **kwargs):
 
 
 @router.get("/snapshot")
-def market_snapshot():
+def market_snapshot(_: dict = Depends(get_current_user)):
     """返回缓存数据；若缓存为空则触发后台刷新，下次请求时返回结果。"""
     from app.services.market import _get_cache, get_hot_stocks, get_bond_yields, get_fund_navs
     hot = _get_cache("hot_stocks") or []
@@ -30,7 +31,7 @@ def market_snapshot():
 
 
 @router.get("/hot-stocks")
-def hot_stocks(top_n: int = 10):
+def hot_stocks(top_n: int = 10, _: dict = Depends(get_current_user)):
     from app.services.market import _get_cache, get_hot_stocks
     cached = _get_cache("hot_stocks") or []
     if not cached:
@@ -39,7 +40,7 @@ def hot_stocks(top_n: int = 10):
 
 
 @router.get("/bond-yields")
-def bond_yields():
+def bond_yields(_: dict = Depends(get_current_user)):
     from app.services.market import _get_cache, get_bond_yields
     cached = _get_cache("bond_yields") or []
     if not cached:
@@ -48,7 +49,7 @@ def bond_yields():
 
 
 @router.get("/fund-navs")
-def fund_navs():
+def fund_navs(_: dict = Depends(get_current_user)):
     from app.services.market import _get_cache, get_fund_navs
     cached = _get_cache("fund_navs") or []
     if not cached:

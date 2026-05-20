@@ -1,23 +1,28 @@
 import { ConfigProvider, theme } from 'antd'
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import NavBar from './components/NavBar'
 import SearchPage from './pages/SearchPage'
 import SkillsPage from './pages/SkillsPage'
 import CardsPage from './pages/CardsPage'
+import LoginPage from './pages/LoginPage'
 import type { Skill } from './api/types'
+import { tokenStore } from './api/client'
 
-// 处理从技能广场跳转过来时携带的 skill state
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const token = tokenStore.get()
+  const location = useLocation()
+  if (!token) return <Navigate to="/login" state={{ from: location }} replace />
+  return <>{children}</>
+}
+
 function SearchPageWrapper() {
   const location = useLocation()
   const navigate = useNavigate()
   const skill = location.state?.skill as Skill | undefined
 
   useEffect(() => {
-    if (skill) {
-      // 清除 state，避免刷新时重复触发
-      navigate('/', { replace: true, state: null })
-    }
+    if (skill) navigate('/', { replace: true, state: null })
   }, [])
 
   return <SearchPage initialSkill={skill} />
@@ -42,11 +47,21 @@ export default function App() {
       }}
     >
       <BrowserRouter>
-        <NavBar />
         <Routes>
-          <Route path="/" element={<SearchPageWrapper />} />
-          <Route path="/skills" element={<SkillsPage />} />
-          <Route path="/cards" element={<CardsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/*"
+            element={
+              <RequireAuth>
+                <NavBar />
+                <Routes>
+                  <Route path="/" element={<SearchPageWrapper />} />
+                  <Route path="/skills" element={<SkillsPage />} />
+                  <Route path="/cards" element={<CardsPage />} />
+                </Routes>
+              </RequireAuth>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

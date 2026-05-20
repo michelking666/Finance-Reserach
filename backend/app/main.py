@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # 加载 backend/.env
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-from app.routers import cards, chat, market, search, skills
+from app.routers import auth, cards, chat, market, search, skills
 from app.services import db, scheduler
 
 
@@ -31,11 +31,12 @@ app = FastAPI(title="AI Search · 智能研究搜索", version="0.1.0", lifespan
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(cards.router)
 app.include_router(skills.router)
