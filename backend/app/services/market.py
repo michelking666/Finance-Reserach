@@ -9,6 +9,7 @@ from app.services import db
 
 _cache: dict[str, tuple[float, Any]] = {}
 _lock = threading.Lock()
+_miniracer_lock = threading.Lock()  # libmini_racer 不是线程安全的，串行化所有调用
 _TTL_SHORT = 60    # 行情/新闻：60s
 _TTL_LONG = 300    # 研报/公告：5min
 
@@ -45,7 +46,8 @@ def get_hot_stocks(top_n: int = 5) -> list[dict]:
         return []
 
     try:
-        df = ak.stock_hot_rank_em()
+        with _miniracer_lock:
+            df = ak.stock_hot_rank_em()
         # 字段：当前排名 代码 股票名称 最新价 涨跌额 涨跌幅
         result = []
         for _, row in df.head(top_n).iterrows():
@@ -80,7 +82,8 @@ def get_bond_yields() -> list[dict]:
     try:
         from datetime import date, timedelta
         start = (date.today() - timedelta(days=10)).strftime("%Y%m%d")
-        df = ak.bond_zh_us_rate(start_date=start)
+        with _miniracer_lock:
+            df = ak.bond_zh_us_rate(start_date=start)
         if df.empty:
             return []
         row = df.iloc[-1]
@@ -155,7 +158,8 @@ def get_fund_navs() -> list[dict]:
     result = []
     for code, name, fund_type in _WATCH_FUNDS:
         try:
-            df = ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势")
+            with _miniracer_lock:
+                df = ak.fund_open_fund_info_em(symbol=code, indicator="单位净值走势")
             if df.empty or len(df) < 2:
                 continue
             last = df.iloc[-1]
@@ -201,7 +205,8 @@ def get_stock_research_reports(symbol: str, top_n: int = 5) -> list[dict]:
         return []
 
     try:
-        df = ak.stock_research_report_em(symbol=symbol)
+        with _miniracer_lock:
+            df = ak.stock_research_report_em(symbol=symbol)
         if df is None or df.empty:
             return []
         result = []
@@ -235,7 +240,8 @@ def get_stock_news(symbol: str, top_n: int = 5) -> list[dict]:
         return []
 
     try:
-        df = ak.stock_news_em(symbol=symbol)
+        with _miniracer_lock:
+            df = ak.stock_news_em(symbol=symbol)
         if df is None or df.empty:
             return []
         result = []
@@ -269,7 +275,8 @@ def get_fund_announcements(symbol: str, top_n: int = 5) -> list[dict]:
         return []
 
     try:
-        df = ak.fund_announcement_report_em(symbol=symbol)
+        with _miniracer_lock:
+            df = ak.fund_announcement_report_em(symbol=symbol)
         if df is None or df.empty:
             return []
         result = []
