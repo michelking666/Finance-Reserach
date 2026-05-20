@@ -1,0 +1,631 @@
+/* ── 首屏 ─────────────────────────────────────────────── */
+.homePage {
+  min-height: calc(100vh - 56px);
+  padding: 32px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+/* 顶部搜索区 */
+.homeTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.homeCenter {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.homeLogo {
+  width: 56px;
+  height: 56px;
+  background: #0f1929;
+  border: 1px solid #1e3a5f;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.homeTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.homeSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.homeSearchWrap {
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 16px;
+}
+
+.homeSearchInput {
+  background: #0f1929 !important;
+  border: 1px solid #1e3a5f !important;
+  border-radius: 12px !important;
+  height: 52px;
+  font-size: 15px;
+  color: #e2e8f0 !important;
+}
+
+.homeSearchInput:hover,
+.homeSearchInput:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+.homeSearchInput .ant-input {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+}
+
+.homeSearchInput .ant-input::placeholder {
+  color: #4b5563 !important;
+}
+
+/* ── 快捷技能 ─────────────────────────────────────────── */
+.quickSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.quickSkillBtn {
+  background: #0f1929 !important;
+  border: 1px solid #1e3a5f !important;
+  color: #94a3b8 !important;
+  border-radius: 8px !important;
+  height: 34px;
+  padding: 0 12px !important;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.quickSkillBtn:hover {
+  border-color: #3b82f6 !important;
+  color: #93c5fd !important;
+  background: #0f1929 !important;
+}
+
+/* ── 信息面板三栏 ─────────────────────────────────────── */
+.homeInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.infoCardRight {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.infoCard {
+  background: #0f1929;
+  border: 1px solid #1e3a5f;
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.infoCardHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.infoCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.infoCardDate {
+  font-size: 11px;
+  color: #4b5563;
+  margin-left: auto;
+}
+
+/* ── 市场快讯 ─────────────────────────────────────────── */
+.newsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.newsItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.newsText {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ── 热门标的 ─────────────────────────────────────────── */
+.hotTabs {
+  margin-top: -4px;
+}
+
+.hotTabs :global(.ant-tabs-nav) {
+  margin-bottom: 8px !important;
+}
+
+.hotTabs :global(.ant-tabs-tab) {
+  font-size: 12px !important;
+  padding: 4px 0 !important;
+  color: #6b7280 !important;
+}
+
+.hotTabs :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: #3b82f6 !important;
+}
+
+.hotTabs :global(.ant-tabs-ink-bar) {
+  background: #3b82f6 !important;
+}
+
+.hotList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hotItem {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.hotItem:hover {
+  background: #111f35;
+}
+
+.hotName {
+  font-size: 13px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.hotCode {
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.hotUp {
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.hotDown {
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── 今日日历 ─────────────────────────────────────────── */
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eventItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.eventTime {
+  font-size: 11px;
+  color: #4b5563;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+  padding-top: 1px;
+}
+
+.eventText {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* ── 常用卡片 ─────────────────────────────────────────── */
+.savedSection {
+  width: 100%;
+}
+
+.savedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.savedLabel {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.savedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.savedCard {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.savedCard:hover {
+  border-color: #3b82f6;
+  background: #111f35;
+}
+
+.savedCardScenario {
+  font-size: 10px;
+  color: #3b82f6;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.savedCardTitle {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.savedCardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ── 搜索结果双栏 ─────────────────────────────────────── */
+.searchPage {
+  display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+.chatPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #1f2937;
+  min-width: 0;
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 消息气泡 ─────────────────────────────────────────── */
+.userBubble {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.userText {
+  background: #1e3a5f;
+  border: 1px solid #2d5a8e;
+  color: #e2e8f0;
+  padding: 10px 14px;
+  border-radius: 12px 12px 2px 12px;
+  max-width: 75%;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.aiBubble {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.aiAvatar {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.aiText {
+  background: #111827;
+  border: 1px solid #1f2937;
+  color: #d1d5db;
+  padding: 12px 16px;
+  border-radius: 2px 12px 12px 12px;
+  max-width: 85%;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── 来源列表 ─────────────────────────────────────────── */
+.sourceList {
+  padding: 12px 24px;
+  border-top: 1px solid #1f2937;
+  background: #080c14;
+}
+
+.sourceTitle {
+  font-size: 12px;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.sourceItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.sourceIndex {
+  font-size: 11px;
+  color: #4b5563;
+  min-width: 20px;
+}
+
+.sourceText {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.sourceMeta {
+  color: #4b5563;
+}
+
+/* ── 输入框区 ─────────────────────────────────────────── */
+.chatInputWrap {
+  padding: 12px 16px 16px;
+  border-top: 1px solid #1f2937;
+  background: #080c14;
+}
+
+.activeSkillTag {
+  margin-bottom: 8px;
+}
+
+.chatInput {
+  background: #0f1929 !important;
+  border: 1px solid #1e3a5f !important;
+  border-radius: 10px !important;
+  color: #e2e8f0 !important;
+}
+
+.chatInput:hover,
+.chatInput:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+}
+
+.chatInput .ant-input {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+  font-size: 14px;
+}
+
+.chatInput .ant-input::placeholder {
+  color: #4b5563 !important;
+}
+
+/* ── 右侧卡片面板 ─────────────────────────────────────── */
+.cardPane {
+  width: 380px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 20px;
+  background: #080c14;
+}
+
+.cardPlaceholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardPanel {
+  background: #0f1929;
+  border: 1px solid #1e3a5f;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.cardScenario {
+  font-size: 11px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f1f5f9;
+  line-height: 1.4;
+}
+
+.cardSubtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 3px;
+}
+
+.saveBtn {
+  flex-shrink: 0;
+}
+
+/* ── 指标行 ───────────────────────────────────────────── */
+.metricsRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.metricItem {
+  flex: 1;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.metricValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+
+.metricLabel {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 3px;
+}
+
+.metricChange {
+  font-size: 11px;
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+/* ── 要点列表 ─────────────────────────────────────────── */
+.bulletList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bulletItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.bulletDot {
+  width: 5px;
+  height: 5px;
+  background: #3b82f6;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ── 标签行 ───────────────────────────────────────────── */
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* ── 推荐技能 ─────────────────────────────────────────── */
+.suggestLabel {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.suggestRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggestBtn {
+  background: #111827 !important;
+  border: 1px solid #1f2937 !important;
+  color: #94a3b8 !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+}
+
+.suggestBtn:hover {
+  border-color: #3b82f6 !important;
+  color: #93c5fd !important;
+}
